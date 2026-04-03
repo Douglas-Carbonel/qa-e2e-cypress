@@ -25,10 +25,8 @@ jobs:
 
       - name: Sync cenários do 4QA
         env:
-          QA4_API_KEY: ${{ secrets.QA4_API_KEY }}
+          QA4_COMPANIES: ${{ secrets.QA4_COMPANIES }}
         run: node scripts/qa4-sync.js
 
       - name: Rodar testes Cypress
-        env:
-          QA4_API_KEY: ${{ secrets.QA4_API_KEY }}
         run: npx cypress run
