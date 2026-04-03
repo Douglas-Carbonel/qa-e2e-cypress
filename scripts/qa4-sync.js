@@ -45,7 +45,7 @@ async function main() {
         try {
             companies = JSON.parse(companiesEnv)
         } catch (e) {
-            console.error('4QA: QA4_COMPANIES não é um JSON válido — ex: {"saucedemo":"key1","carhub":"key2"}')
+            console.error('4QA: QA4_COMPANIES não é um JSON valido — ex: {"saucedemo":"key1","carhub":"key2"}')
             process.exit(1)
         }
 
