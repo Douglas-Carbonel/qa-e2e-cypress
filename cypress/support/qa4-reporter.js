@@ -1,17 +1,32 @@
 // cypress/support/qa4-reporter.js
+//
+// Detecta automaticamente a empresa pelo caminho do arquivo de teste
+// (pasta dentro de cypress/e2e/) e reporta o resultado no 4QA.
+
 const RESULTS_ENDPOINT = 'https://ivmdgybacqbkpyamtjrd.supabase.co/functions/v1/cypress-results'
 
-function reportToQA4(testTitle, testState, duration, errorMsg) {
+/**
+ * @param {string} testTitle  - this.currentTest.title
+ * @param {string} state      - this.currentTest.state ('passed' | 'failed')
+ * @param {number} duration   - this.currentTest.duration
+ * @param {string|null} errorMessage - this.currentTest.err?.message
+ */
+function reportToQA4(testTitle, state, duration, errorMessage) {
     const scenarioMap = Cypress.env('QA4_SCENARIO_MAP') || {}
-    const scenarioId = scenarioMap[testTitle]
-    const apiKey = Cypress.env('QA4_API_KEY')
 
-    if (!scenarioId) {
-        cy.log(`⚠️ 4QA: cenário "${testTitle}" não encontrado no mapa`)
+    // Detecta a pasta do produto pelo caminho do spec
+    // ex: "cypress/e2e/saucedemo/login.cy.js" → "saucedemo"
+    const specParts = (Cypress.spec.relative || '').split('/')
+    const folder = specParts.length >= 3 ? specParts[2] : 'default'
+
+    const entry = scenarioMap[`${folder}:${testTitle}`]
+
+    if (!entry) {
+        Cypress.log({ name: '4QA', message: `cenário "${folder}:${testTitle}" não encontrado` })
         return
     }
 
-    cy.log(`📤 4QA: enviando resultado — ${testTitle} → ${testState}`)
+    const { scenarioId, apiKey } = entry
 
     cy.request({
         method: 'POST',
@@ -19,15 +34,15 @@ function reportToQA4(testTitle, testState, duration, errorMsg) {
         body: {
             results: [{
                 scenario_id: scenarioId,
-                status: testState === 'passed' ? 'passed' : 'failed',
-                duration: duration || null,
-                error_message: errorMsg || null,
-                executed_by: 'cypress-local',
+                status: state === 'passed' ? 'passed' : 'failed',
+                duration: duration,
+                error_message: errorMessage || null,
+                executed_by: 'cypress-ci',
             }],
         },
         failOnStatusCode: false,
-    }).then((response) => {
-        cy.log(`✅ 4QA: ${JSON.stringify(response.body)}`)
+    }).then(() => {
+        Cypress.log({ name: '4QA', message: `reportado: ${folder} / ${testTitle} → ${state}` })
     })
 }
 

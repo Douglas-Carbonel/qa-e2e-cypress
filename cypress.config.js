@@ -6,15 +6,13 @@ module.exports = defineConfig({
   e2e: {
     specPattern: 'cypress/e2e/**/*.{cy.js,spec.js,cy.ts,spec.ts}',
     setupNodeEvents(on, config) {
-      // Carrega o mapa título→ID gerado pelo sync
+      // Carrega o mapa gerado pelo qa4-sync.js e injeta no env
       try {
-        const titleMap = JSON.parse(fs.readFileSync('qa4-scenarios.json', 'utf-8'))
-        config.env.QA4_SCENARIO_MAP = titleMap
-        console.log('4QA: mapa carregado com', Object.keys(titleMap).length, 'cenários')
+        const map = JSON.parse(fs.readFileSync('qa4-scenarios.json', 'utf-8'))
+        config.env.QA4_SCENARIO_MAP = map
       } catch (e) {
         console.warn('4QA: qa4-scenarios.json não encontrado — rode o sync primeiro')
       }
-      return config
     },
   },
   env: {
