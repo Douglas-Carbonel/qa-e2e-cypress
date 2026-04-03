@@ -26,27 +26,7 @@ jobs:
       - name: Sync cenários do 4QA
         env:
           QA4_API_KEY: ${{ secrets.QA4_API_KEY }}
-        run: |
-          node -e "
-            const https = require('https')
-            const fs    = require('fs')
-            const path  = require('path')
-
-            const url = 'https://ivmdgybacqbkpyamtjrd.supabase.co/functions/v1/cypress-sync?api_key=' + process.env.QA4_API_KEY
-            https.get(url, res => {
-              let data = ''
-              res.on('data', d => data += d)
-              res.on('end', () => {
-                const { features, map } = JSON.parse(data)
-                features.forEach(f => {
-                  fs.mkdirSync(path.dirname(f.path), { recursive: true })
-                  fs.writeFileSync(f.path, f.content, 'utf-8')
-                })
-                fs.writeFileSync('.qa4map.json', JSON.stringify(map, null, 2), 'utf-8')
-                console.log('4QA: sincronizados ' + features.length + ' cenários')
-              })
-            })
-          "
+        run: node scripts/qa4-sync.js
 
       - name: Rodar testes Cypress
         env:
