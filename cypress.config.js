@@ -1,19 +1,19 @@
 // cypress.config.js
 const { defineConfig } = require('cypress')
-const createBundler = require('@bahmutov/cypress-esbuild-preprocessor')
-const { addCucumberPreprocessorPlugin } = require('@badeball/cypress-cucumber-preprocessor')
-const { createEsbuildPlugin } = require('@badeball/cypress-cucumber-preprocessor/esbuild')
-const qa4Plugin = require('./cypress/support/qa4.plugin')
+const fs = require('fs')
 
 module.exports = defineConfig({
   e2e: {
-    specPattern: 'cypress/e2e/**/*.feature',
-    async setupNodeEvents(on, config) {
-      await addCucumberPreprocessorPlugin(on, config)
-      on('file:preprocessor', createBundler({
-        plugins: [createEsbuildPlugin(config)]
-      }))
-      qa4Plugin(on, config)
+    specPattern: 'cypress/e2e/**/*.{cy.js,spec.js,cy.ts,spec.ts}',
+    setupNodeEvents(on, config) {
+      // Carrega o mapa título→ID gerado pelo sync
+      try {
+        const titleMap = JSON.parse(fs.readFileSync('qa4-scenarios.json', 'utf-8'))
+        config.env.QA4_SCENARIO_MAP = titleMap
+        console.log('4QA: mapa carregado com', Object.keys(titleMap).length, 'cenários')
+      } catch (e) {
+        console.warn('4QA: qa4-scenarios.json não encontrado — rode o sync primeiro')
+      }
       return config
     },
   },
