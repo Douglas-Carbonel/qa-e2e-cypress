@@ -1,0 +1,22 @@
+{
+  "name": "qa-e2e-cypress",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000Q\u0000A\u0000 \u0000E\u00002\u0000E\u0000 \u0000C\u0000y\u0000p\u0000r\u0000e\u0000s\u0000s\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^24.0.1",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
+    "cypress": "^15.13.0",
+    "dotenv": "^17.3.1"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepDefinitions": false,
+    "stepDefinitions": "cypress/support/step_definitions/**/*.js"
+  }
+}

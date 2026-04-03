@@ -1,0 +1,54 @@
+name: Cypress BDD Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync cenários do 4QA
+        env:
+          QA4_API_KEY: ${{ secrets.QA4_API_KEY }}
+        run: |
+          node -e "
+            const https = require('https')
+            const fs    = require('fs')
+            const path  = require('path')
+
+            const url = 'https://ivmdgybacqbkpyamtjrd.supabase.co/functions/v1/cypress-sync?api_key=' + process.env.QA4_API_KEY
+            https.get(url, res => {
+              let data = ''
+              res.on('data', d => data += d)
+              res.on('end', () => {
+                const { features, map } = JSON.parse(data)
+                features.forEach(f => {
+                  fs.mkdirSync(path.dirname(f.path), { recursive: true })
+                  fs.writeFileSync(f.path, f.content, 'utf-8')
+                })
+                fs.writeFileSync('.qa4map.json', JSON.stringify(map, null, 2), 'utf-8')
+                console.log('4QA: sincronizados ' + features.length + ' cenários')
+              })
+            })
+          "
+
+      - name: Rodar testes Cypress
+        env:
+          QA4_API_KEY: ${{ secrets.QA4_API_KEY }}
+        run: npx cypress run
