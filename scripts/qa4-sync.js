@@ -50,7 +50,7 @@ async function main() {
         }
 
         for (const [folder, apiKey] of Object.entries(companies)) {
-            console.log(`4QA: sincronizando produtos "${folder}"...`)
+            console.log(`4QA: sincronizando produto "${folder}"...`)
             try {
                 const titleMap = await fetchTitleMap(apiKey)
                 for (const [title, scenarioId] of Object.entries(titleMap)) {
