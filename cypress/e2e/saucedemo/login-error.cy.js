@@ -19,7 +19,7 @@ describe('SauceDemo Login invalido', () => {
         cy.get('#user-name').type('usuario_errado')
         cy.get('#password').type('senha_errada')
         cy.get('#login-button').click()
-        cy.get('[data-test="error"]').should('be.visible')
+        cy.get('[data-test="errorzx"]').should('be.visible')
     })
 
 })
