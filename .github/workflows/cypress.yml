@@ -23,6 +23,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Sync cenários do 4QA
+        env:
+          QA4_COMPANIES: ${{ secrets.QA4_COMPANIES }}
+        run: node scripts/qa4-sync.js
+
       - name: Rodar testes Cypress
         env:
           QA4_COMPANIES: ${{ secrets.QA4_COMPANIES }}
