@@ -1,5 +1,4 @@
 // cypress.config.js
-// Sem qa4-scenarios.json — busca o mapa direto da API a cada run.
 const { defineConfig } = require('cypress')
 const https = require('https')
 const fs = require('fs')
@@ -31,20 +30,21 @@ function httpRequest(method, url, headers, body) {
   })
 }
 
-// Normaliza texto: remove acentos, lowercase, espaços extras
 function normalize(str) {
   return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/s+/g, ' ').trim()
 }
 
-// Cache: folder → titleMap { titulo → scenarioId }
 const cache = {}
 
 module.exports = defineConfig({
+  projectId: 'z2xe64',
+
   e2e: {
+
+    baseUrl: 'https://www.saucedemo.com',
     screenshotOnRunFailure: true,
 
     setupNodeEvents(on, config) {
-      // Lê QA4_COMPANIES do ambiente: { "pasta": "api-key" }
       let folderToApiKey = {}
       try {
         folderToApiKey = JSON.parse(process.env.QA4_COMPANIES || '{}')
@@ -67,7 +67,6 @@ module.exports = defineConfig({
           return
         }
 
-        // Busca titleMap da API (com cache por pasta)
         if (!cache[folder]) {
           const res = await httpRequest('GET', `${SYNC_ENDPOINT}?api_key=${apiKey}`, {}, null)
           if (!res.ok) {
