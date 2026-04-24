@@ -1,0 +1,12 @@
+node_modules/
+cypress.env
+cypress.env.json
+cypress/screenshots/
+cypress/videos/
+cypress/reports/
+mochawesome-report/
+dist/
+coverage/
+.DS_Store
+.vscode/
+.idea/
