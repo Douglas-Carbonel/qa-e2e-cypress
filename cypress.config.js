@@ -43,7 +43,7 @@ module.exports = defineConfig({
 
     baseUrl: 'https://www.saucedemo.com',
     screenshotOnRunFailure: true,
-
+    downloadsFolder: 'cypress/downloads',
     setupNodeEvents(on, config) {
       let folderToApiKey = {}
       try {
